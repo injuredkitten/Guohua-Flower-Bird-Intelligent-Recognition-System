@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>首页 - 国画花鸟智鉴</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* General body style */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url("{{ url_for('static', filename='frontpage.png') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        /* Top navbar */
+        .navbar {
+            background-color: rgba(51, 51, 51, 0.7);
+            padding: 15px;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+        }
+
+        .navbar .language-switch {
+            margin-right: 20px;
+        }
+
+        /* Content container */
+        #content-container {
+            display: flex;
+            padding: 200px 50px 50px;
+            justify-content: center;
+            background-color: transparent;
+            max-width:1000px;
+            margin:0 auto;
+            min-height: calc(60vh - 100px);
+        }
+
+        /* Left menu */
+        #menu {
+            background-color: white;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 20px;
+            width: 200px;
+            height: 440px;
+            flex-shrink: 0;
+        }
+
+        #menu a:first-child {
+            margin-top: 50px; /* 第一个链接的顶部空隙，增加整体下移 */
+        }
+
+        #menu a {
+            display: block;
+            color: black;
+            padding: 20px 0;
+            text-decoration: none;
+            border-bottom: 1px solid #555;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: transform 0.3s, font-size 0.3s;
+        }
+
+        #menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(10px) scale(1.1); /* 略微右移和放大 */
+        }
+
+        /* Main content */
+        #main-content {
+            background-color: white;
+            background-size: cover;
+            background-position: center;
+            padding: 40px;
+            flex: 1;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            min-height: 400px;
+            overflow-y: auto;
+        }
+
+        #main-content h1 {
+            color: black;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        #main-content p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            font-family:'Noto Serif SC', serif;
+            color: #4d4d4d;
+        }
+
+        /* Carousel container */
+        .carousel-container {
+            position: relative;
+            width: 600px; /* 增加框的宽度 */
+            height: 450px; /* 增加框的高度 */
+            margin: 50px auto;
+            overflow: hidden; /* 确保只显示一张图片 */
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: black; /* 黑色背景 */
+            z-index: -1; /* 使其在图片后面 */
+            border-radius: 10px; /* 圆角与容器一致 */
+        }
+
+        .carousel-slide {
+            display: flex;
+            transition: transform 1s ease-in-out;
+            width: calc(100% * 3); /* 图片数量 */
+        }
+
+        .carousel-slide img {
+            width: 600px; /* 设置为容器宽度 */
+            height: 450px; /* 设置为容器高度 */
+            object-fit: cover; /* 确保图片保持比例 */
+            flex-shrink: 0; /* 防止图片缩小 */
+        }
+
+
+        /* Navigation arrows */
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: translateY(-50%);
+            border-radius: 50%;
+            user-select: none;
+            z-index: 1;
+        }
+
+        .prev {
+            left: 10px;
+        }
+
+        .next {
+            right: 10px;
+        }
+
+        /* Dots container */
+        .dots-container {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .dot {
+            height: 15px;
+            width: 15px;
+            margin: 0 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .active {
+            background-color: rgba(0, 200, 255, 0.7);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            margin-top:50px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top navbar -->
+    <div class="navbar">
+        <div class="logo">
+            <h2>国画花鸟智鉴</h2>
+        </div>
+        <div class="nav-links">
+
+        </div>
+        <div class="language-switch">
+            <a href="#">EN</a>
+        </div>
+    </div>
+
+    <!-- Content container -->
+    <div id="content-container">
+        <!-- Left menu -->
+        <div id="menu">
+            <a href="{{ url_for('upload') }}">构建花鸟智鉴</a>
+            <a href="{{ url_for('showimage') }}">查看意象图鉴</a>
+        </div>
+
+        <!-- Main content -->
+        <div id="main-content">
+            <div class="overlay">
+            <h1>关于“国画花鸟智鉴”</h1>
+            <p>本项目名为“国画花鸟智鉴”，是一款国画花鸟意象智能识别分类应用，实现了对输入国画图片进行智能识别提取分类的功能，使用户可以构建属于自己的国画花鸟数字图鉴。通过构建一个创新的Web应用平台，使用户更低门槛的接触学习国画，以及便于研究者分析国画所承载的历史人文价值。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image carousel -->
+    <div class="carousel-container">
+        <div class="carousel-background"></div>
+        <div class="carousel-slide">
+            <img src="{{ url_for('static', filename='image1.jpg') }}" alt="Image 1">
+            <img src="{{ url_for('static', filename='image2.jpg') }}" alt="Image 2">
+            <img src="{{ url_for('static', filename='image3.jpg') }}" alt="Image 3">
+        </div>
+        <div class="prev">&#10094;</div>
+        <div class="next">&#10095;</div>
+        <div class="dots-container">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 国画花鸟智鉴</p>
+    </footer>
+
+    <script>
+        const carouselSlide = document.querySelector('.carousel-slide');
+        const images = document.querySelectorAll('.carousel-slide img');
+        const dots = document.querySelectorAll('.dot');
+        const prevBtn = document.querySelector('.prev');
+        const nextBtn = document.querySelector('.next');
+
+        let counter = 0;
+        const size = images[0].clientWidth;
+
+        function updateCarousel() {
+            carouselSlide.style.transform = 'translateX(' + (-size * counter) + 'px)';
+            dots.forEach(dot => dot.classList.remove('active'));
+            dots[counter].classList.add('active');
+        }
+
+        function nextSlide() {
+            if (counter >= images.length - 1) counter = -1;
+            counter++;
+            updateCarousel();
+        }
+
+        function prevSlide() {
+            if (counter <= 0) counter = images.length;
+            counter--;
+            updateCarousel();
+        }
+
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                counter = index;
+                updateCarousel();
+            });
+        });
+
+        setInterval(nextSlide, 3000);
+         // Menu hover background change
+    const menuLinks = document.querySelectorAll('#menu a');
+
+    menuLinks[0].addEventListener('mouseenter', function() {
+        document.body.style.backgroundImage = "url('{{ url_for('static', filename='background.jpeg') }}')";
+    });
+    menuLinks[1].addEventListener('mouseenter', function() {
+        document.body.style.backgroundImage = "url('{{ url_for('static', filename='bg.png') }}')";
+    });
+
+    // Reset to default background on mouse leave
+    menuLinks.forEach(link => {
+        link.addEventListener('mouseleave', function() {
+            document.body.style.backgroundImage = "url('{{ url_for('static', filename='frontpage.png') }}')";
+        });
+    });
+    </script>
+</body>
+</html>

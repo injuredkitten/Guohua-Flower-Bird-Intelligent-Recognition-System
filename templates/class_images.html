@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ class_name }} 分类的图片</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; 
+            background-color: #f8f9fa; /* 淡灰色背景 */
+            font-family: Arial, sans-serif; /* 字体 */
+            position: relative; /* 为绝对定位提供参考 */
+            background-image: url("/static/bg.png"); /* 背景图片路径 */
+            background-size: cover; /* 图片覆盖整个页面 */
+            background-position: center; /* 图片居中 */
+            overflow-y: auto;
+        }
+        .content-container {
+            background-color: #ffffff; /* 白色背景 */
+            border-radius: 10px; /* 圆角 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+            padding: 30px; /* 增加内边距 */
+            width: 90%; /* 宽度稍微增大 */
+            max-width: 1000px; /* 最大宽度 */
+            text-align: center; /* 文本居中 */
+        }
+        h1 {
+            color: #000000;
+            margin-bottom: 20px;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px; /* 间距 */
+            margin-top: 20px;
+        }
+        img {
+            width: 200px; /* 统一宽度 */
+            height: 150px; /* 统一高度 */
+            object-fit: contain; /* 保持比例并裁剪 */
+            transition: transform 0.2s;
+        }
+        img:hover {
+            transform: scale(1.05); /* 悬停放大效果 */
+        }
+        a {
+            display: flex; /* 设置为 flexbox */
+            align-items: center; /* 垂直居中 */
+            justify-content: center; /* 水平居中 */
+            width: 20%; /* 调整为适应容器宽度的20% */
+            height: 60px; /* 增高 */
+            border: none; /* 移除边框 */
+            background-color: #ffffff; /* 不透明背景 */
+            background-image: url("/static/frontpage.png"); /* 添加背景图片 */
+            color: rgb(0, 0, 0); /* 文字颜色 */
+            border-radius: 8px; /* 圆角 */
+            cursor: pointer; /* 鼠标指针样式 */
+            transition: background-color 0.3s, transform 0.2s; /* 添加悬停效果 */
+            margin: 30px auto 0; /* 上边距为30px，左右自动居中 */
+            font-size: 18px; /* 增大字体 */
+            font-weight: bold; /* 加粗字体 */
+            text-decoration: none; /* 去掉下划线 */
+        }
+        a:hover {
+            background-color: #0056b3; /* 悬停时背景颜色 */
+            transform: translateY(-3px); /* 悬停时上移效果 */
+        }
+    </style>
+</head>
+<body>
+    <div class="content-container">
+        <h1>{{ class_name }}</h1>
+        
+        <div class="image-container">
+            {% for image in images %}
+                <img src="{{ url_for('static', filename='detect/' + class_name + '/' + image) }}" alt="{{ class_name }}">
+            {% endfor %}
+        </div>
+        
+        <a href="{{ url_for('showimage') }}">返回分类页面</a>
+    </div>
+</body>
+</html>

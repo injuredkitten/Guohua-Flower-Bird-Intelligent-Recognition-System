@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>目标检测系统</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        /* 页面样式 */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            background-image: url("/static/background.jpeg");
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 顶部导航栏 */
+        #navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            color: white;
+            z-index: 1000;
+        }
+
+        /* 左侧 Logo */
+        #logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+        }
+
+        /* 右侧菜单 */
+        #menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-item {
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item i {
+            margin-left: 5px;
+            font-size: 1.2em;
+        }
+
+        /* 主体内容 */
+        #main-content {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            margin: 120px auto 0;
+            padding: 20px;
+        }
+
+        /* 左侧导航栏 */
+        #sidebar {
+            background-color: rgba(255, 255, 255, 0.8); /* 设置左侧背景颜色 */
+            width: 200px;
+            padding: 20px;
+            padding-top: 80px; /* 调整按钮整体下移 */
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            border-right: 1px solid #ccc; /* 添加分界线 */
+        }
+
+        .home-button {
+            width: 100%;
+            text-align: left;
+            font-size: 1.2em;
+            color: #333;
+            padding: 10px 0;
+            padding-left: 15px; /* 文字右移 */
+            font-weight: bold;
+            background-color: transparent;
+            border: none;
+            border-bottom: 0.8px solid #333; /* 按钮下方的分隔线 */
+            cursor: pointer;
+            transition: transform 0.3s, font-size 0.3s;
+            margin-bottom: 40px;
+        }
+
+        .home-button:hover {
+            transform: scale(1.1);
+            font-size: 1.25em;
+        }
+
+        /* 右侧内容区域 */
+        #content-container {
+            flex: 1;
+            padding: 20px;
+
+            background-color: rgba(255, 255, 255, 0.8); /* 设置右侧背景颜色 */
+
+        }
+
+        /* 标题样式 */
+        #title {
+            color: #000;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* 图片显示区域 */
+        #imageDisplay, #result_show {
+            height: 300px;
+            width: 80%;
+            max-width: 800px;
+            border: 2px solid #ffffff;
+            border-radius: 0px;
+            margin: 0px auto 50px; /* 设置水平居中 */
+            margin-left:90px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            object-fit: contain;
+        }
+
+        /* 文件上传按钮样式 */
+        .file-upload {
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            color: #000;
+            border-radius: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s, font-size 0.3s;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .file-upload:hover {
+            transform: scale(1.1);
+            font-size: 19.8px;
+        }
+
+        /* 提交按钮样式 */
+        .submit-button {
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            color: #000;
+            border: none;
+            border-radius: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            font-size: 19px;
+        }
+
+        /* 隐藏文件输入 */
+        #imageFiles {
+            display: none;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            #main-content {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #ccc;
+            }
+
+            #content-container {
+                width: 100%;
+            }
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            height: 80px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <div id="logo">国画花鸟智鉴</div>
+        <div id="menu">
+            <div class="menu-item">EN</div>
+            <div class="menu-item"><i class="fas fa-search"></i></div>
+            <div class="menu-item"><i class="fas fa-bars"></i></div>
+        </div>
+    </div>
+
+    <!-- 主体内容 -->
+    <div id="main-content">
+        <!-- 左侧导航栏 -->
+        <div id="sidebar">
+            <button class="home-button" onclick="window.location.href='/showimage'">查看意象图鉴</button>
+            <button class="home-button" onclick="window.location.href='/home'">返回首页</button>
+        </div>
+
+        <!-- 右侧内容 -->
+        <div id="content-container">
+            <h2 id="title">意象提取</h2>
+            <img id="imageDisplay" alt="" />
+            <img id="result_show" src="data:;base64,{{ img_stream }}" style="display: none;" alt="检测结果">
+            <form method="POST" enctype="multipart/form-data">
+                <label class="file-upload">
+                    <input type="file" name="files" id="imageFiles" multiple directory webkitdirectory onchange="displayImages()">
+                    <span>选择文件</span>
+                </label>
+                <input id="button_detect" type="submit" value="开始检测" class="submit-button">
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 国画花鸟智鉴</p>
+    </footer>
+
+    <script>
+        function displayImages() {
+            var fileInput = document.getElementById("imageFiles");
+            var imageDisplay = document.getElementById("imageDisplay");
+            var files = fileInput.files;
+            var reader = new FileReader();
+
+            if (files.length > 0) {
+                reader.readAsDataURL(files[0]);
+                reader.onload = function (e) {
+                    imageDisplay.src = e.target.result;
+                };
+                imageDisplay.style.display = "block";
+            } else {
+                imageDisplay.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
